@@ -1,4 +1,4 @@
-use std::{ops::Range, vec};
+use std::ops::Range;
 
 use bevy::prelude::*;
 use rand::Rng;
@@ -41,8 +41,4 @@ pub fn random_vec3(
         VectorType::Scalar => Vec3::new(x, y, z),
         VectorType::Unit => Vec3::new(x, y, z).normalize_or_zero(),
     }
-}
-
-pub fn random_unit_float() -> f32 {
-    rand::thread_rng().gen_range(-1.0..1.0)
 }

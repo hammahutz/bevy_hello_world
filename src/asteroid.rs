@@ -1,6 +1,6 @@
 use std::ops::Range;
 
-use bevy::{prelude::*, transform};
+use bevy::prelude::*;
 
 use crate::{
     asset_loader::SceneAssets,
@@ -76,8 +76,6 @@ fn spawn_asteroid(
 
 fn rotate_asteroid(mut query: Query<&mut Transform, With<Asteroid>>, time: Res<Time>) {
     for mut transform in query.iter_mut() {
-        // transform.rotate_local_x(ROTATE_SPEED * util::random_unit_float() * time.delta_seconds());
-        // transform.rotate_local_y(ROTATE_SPEED * util::random_unit_float() * time.delta_seconds());
         transform.rotate_local_z(ROTATE_SPEED * time.delta_seconds());
     }
 }

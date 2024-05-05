@@ -1,7 +1,9 @@
-use bevy::{prelude::*, utils::info};
+use bevy::prelude::*;
 
 use crate::{
-    asset_loader::SceneAssets, collision_detection::Collider, movement::{Acceleration, MovingObjectBundle, Velocity}
+    asset_loader::SceneAssets,
+    collision_detection::Collider,
+    movement::{Acceleration, MovingObjectBundle, Velocity},
 };
 
 const RADIUS: f32 = 10.0;
