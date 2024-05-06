@@ -14,13 +14,13 @@ pub fn random_unit_vector_xz() -> Vec3 {
     random_vec3_normalized(-1.0..1.0, 0.0, -1.0..1.0)
 }
 
-trait RandomUnit {
+pub trait RandomUnit {
     fn get_f32(&self) -> f32;
 }
 
 impl RandomUnit for f32 {
     fn get_f32(&self) -> f32 {
-        0.0
+        *self
     }
 }
 
