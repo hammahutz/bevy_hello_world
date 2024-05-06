@@ -1,44 +1,31 @@
-use std::ops::Range;
-
 use bevy::prelude::*;
 use rand::Rng;
+use std::ops::Range;
 
-pub enum VectorType {
-    Scalar, //TODO Ta reda på rätt namn
-    Unit,
+pub fn random_vec3(x: impl RandomUnit, y: impl RandomUnit, z: impl RandomUnit) -> Vec3 {
+    Vec3::new(x.get_f32(), y.get_f32(), z.get_f32())
 }
 
-pub fn random_2d_unit_vector() -> Vec3 {
-    let vector_type = VectorType::Unit;
-    let x = Some(-1.0..1.0);
-    let y = None;
-    let z = Some(-1.0..1.0);
-
-    random_vec3(vector_type, x, y, z)
+pub fn random_vec3_normalized(x: impl RandomUnit, y: impl RandomUnit, z: impl RandomUnit) -> Vec3 {
+    random_vec3(x.get_f32(), y.get_f32(), z.get_f32()).normalize_or_zero()
 }
-pub fn random_vec3(
-    vector_type: VectorType,
-    x: Option<Range<f32>>,
-    y: Option<Range<f32>>,
-    z: Option<Range<f32>>,
-) -> Vec3 {
-    let mut rng = rand::thread_rng();
 
-    let x = match x {
-        Some(_) => rng.gen_range(x.unwrap()),
-        None => 0.0,
-    };
-    let y = match y {
-        Some(_) => rng.gen_range(y.unwrap()),
-        None => 0.0,
-    };
-    let z = match z {
-        Some(_) => rng.gen_range(z.unwrap()),
-        None => 0.0,
-    };
+pub fn random_unit_vector_xz() -> Vec3 {
+    random_vec3_normalized(-1.0..1.0, 0.0, -1.0..1.0)
+}
 
-    match vector_type {
-        VectorType::Scalar => Vec3::new(x, y, z),
-        VectorType::Unit => Vec3::new(x, y, z).normalize_or_zero(),
+trait RandomUnit {
+    fn get_f32(&self) -> f32;
+}
+
+impl RandomUnit for f32 {
+    fn get_f32(&self) -> f32 {
+        0.0
+    }
+}
+
+impl RandomUnit for Range<f32> {
+    fn get_f32(&self) -> f32 {
+        rand::thread_rng().gen_range(self.clone())
     }
 }

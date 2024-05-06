@@ -1,6 +1,6 @@
 use bevy::prelude::*;
 
-use crate::camera::GameCamera;
+use crate::{camera::GameCamera, schedule::InGameSet};
 
 const DESPAWN_DISTANCE: f32 = 80.0;
 
@@ -8,7 +8,7 @@ pub struct DespawnPlugin;
 
 impl Plugin for DespawnPlugin {
     fn build(&self, app: &mut App) {
-        app.add_systems(Update, despawn_far_away_entitets);
+        app.add_systems(Update, despawn_far_away_entitets.in_set(InGameSet::DespawnEntities));
     }
 }
 
