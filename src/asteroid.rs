@@ -4,7 +4,8 @@ use bevy::prelude::*;
 
 use crate::{
     asset_loader::SceneAssets,
-    collision_detection::Collider,
+    collision_detection::{Collider, CollisionDamage},
+    health::Health,
     movement::{Acceleration, MovingObjectBundle, Velocity},
     schedule::InGameSet,
     util,
@@ -17,6 +18,8 @@ const VELOCITY_SCALAR: f32 = 1.0;
 const ACCELERATION_SCALAR: f32 = 1.0;
 const ROTATE_SPEED: f32 = 5.0;
 const RADIUS: f32 = 2.5;
+const HEALTH: f32 = 80.0;
+const COLLISION_DAMAGE: f32 = 35.0;
 
 pub struct AsteroidPlugin;
 impl Plugin for AsteroidPlugin {
@@ -66,6 +69,8 @@ fn spawn_asteroid(
             },
         },
         Asteroid,
+        Health::new(HEALTH),
+        CollisionDamage::new(COLLISION_DAMAGE),
     ));
 }
 
@@ -74,4 +79,3 @@ fn rotate_asteroid(mut query: Query<&mut Transform, With<Asteroid>>, time: Res<T
         transform.rotate_local_z(ROTATE_SPEED * time.delta_seconds());
     }
 }
-

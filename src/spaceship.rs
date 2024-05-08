@@ -1,10 +1,14 @@
-use bevy::prelude::*;
+use std::process::Command;
+
+use bevy::{ecs::query, prelude::*};
 
 use crate::{
     asset_loader::SceneAssets,
-    collision_detection::Collider,
+    collision_detection::{Collider, CollisionDamage},
+    health::Health,
     movement::{Acceleration, MovingObjectBundle, Velocity},
     schedule::InGameSet,
+    state::GameState,
 };
 
 const RADIUS: f32 = 10.0;
@@ -17,21 +21,29 @@ const MISSILE_RADIUS: f32 = 1.0;
 const MISSILE_SPEED_SCALAR: f32 = 25.0;
 const MISSILE_ACCELERATION_SCALAR: f32 = 200.0;
 const MISSILE_FORWARD_SPAWN_SCALAR: f32 = 7.5;
+const HEALTH: f32 = 80.0;
+const COLLISION_DAMAGE: f32 = 35.0;
+
+const MISSILE_HEALTH: f32 = 80.0;
+const MISSILE_COLLISION_DAMAGE: f32 = 35.0;
 
 pub struct SpaceShipPlugin;
 
 impl Plugin for SpaceShipPlugin {
     fn build(&self, app: &mut App) {
-        app.add_systems(PostStartup, spawn_spaceship).add_systems(
-            Update,
-            (
-                spaceship_movement_control,
-                spaceship_weapon_controls,
-                spaceship_shield_controls,
+        app.add_systems(PostStartup, spawn_spaceship)
+            .add_systems(OnEnter(GameState::GameOver), spawn_spaceship)
+            .add_systems(
+                Update,
+                (
+                    spaceship_movement_control,
+                    spaceship_weapon_controls,
+                    spaceship_shield_controls,
+                )
+                    .chain()
+                    .in_set(InGameSet::UserInput),
             )
-                .chain()
-                .in_set(InGameSet::UserInput),
-        );
+            .add_systems(Update, spaceship_destroyed.in_set(InGameSet::EntityUpdates));
     }
 }
 
@@ -57,6 +69,8 @@ fn spawn_spaceship(mut commands: Commands, scene_assets: Res<SceneAssets>) {
             },
         },
         Spaceship,
+        Health::new(HEALTH),
+        CollisionDamage::new(COLLISION_DAMAGE),
     ));
 }
 
@@ -124,6 +138,8 @@ fn spaceship_weapon_controls(
                 },
             },
             SpaceshipMissile,
+            Health::new(MISSILE_HEALTH),
+            CollisionDamage::new(MISSILE_COLLISION_DAMAGE),
         ));
     }
 }
@@ -139,3 +155,14 @@ fn spaceship_shield_controls(
         commands.entity(spaceship).insert(SpaceshipShield);
     }
 }
+
+fn spaceship_destroyed(
+    mut next_state: ResMut<NextState<GameState>>,
+    query: Query<(), With<Spaceship>>,
+) {
+    if query.get_single().is_err() {
+        next_state.set(GameState::GameOver);
+    }
+}
+
+
